@@ -21,17 +21,17 @@ struct WorldAreaInfo
     DWORD64 WorldArea;
     DWORD64 WorldAreas;
 
-    WorldAreaInfo(DWORD worldAreaHASH16)
+    WorldAreaInfo(DWORD hash16)
     {
         // "Data/WorldAreas.dat"
         auto GetWorldAreas = (void (*)(_Out_ DWORD64 * worldAreas))(PathOfExile + 0xD6A10); // 3.17.4
 
         auto GetWorldArea = (void (*)(_Out_ WorldAreaInfo * worldAreaInfo,
-                                      DWORD * worldAreaHASH16,
+                                      DWORD * hash16,
                                       DWORD64 * worldAreas))(PathOfExile + 0x1586C20); // 3.17.4
 
         GetWorldAreas(&this->WorldAreas);
-        GetWorldArea(this, &worldAreaHASH16, &this->WorldAreas);
+        GetWorldArea(this, &hash16, &this->WorldAreas);
     }
 
     QString getId()
@@ -152,6 +152,12 @@ struct World
 
         struct
         {
+            char    pad_5d0[0x5d0];
+            DWORD64 GameObjectRegister;
+        };
+
+        struct
+        {
             char    pad_8c0[0x8c0];
             Terrain terrain;
         };
@@ -159,7 +165,7 @@ struct World
         char pad[0x1000];
     };
 
-    World(DWORD worldAreaHASH16, DWORD seed)
+    World(DWORD hash16, DWORD seed)
     {
         // 48 89 5C 24 10 48 89 4C 24 08 55 56 57 41 54 41 55 41 56 41 57 48 8B EC 48 83 EC ?? 48 8B F9 E8
         auto InitWorld = (void (*)(_Out_ World * world))(PathOfExile + 0xBD9D50); // 3.17.4
@@ -169,7 +175,7 @@ struct World
                                          DWORD64 a4, DWORD64 a5, DWORD64 a6, DWORD64 a7,
                                          DWORD64 a8, DWORD64 a9, DWORD64 a10))(PathOfExile + 0xBD7DA0); // 3.17.4
 
-        WorldAreaInfo info(worldAreaHASH16);
+        WorldAreaInfo info(hash16);
 
         memset(this, 0, sizeof(World));
 
@@ -239,6 +245,69 @@ struct World
 
 // ====================================================================================================
 
+struct Component
+{
+    virtual void  vFun_0();
+    virtual void  vFun_8();
+    virtual void  vFun_10();
+    virtual void  vFun_18();
+    virtual void  vFun_20();
+    virtual void  vFun_28();
+    virtual void  vFun_30();
+    virtual void  vFun_38();
+    virtual void  vFun_40();
+    virtual void  vFun_48();
+    virtual void  vFun_50();
+    virtual void  vFun_58();
+    virtual char *getName();
+};
+
+struct GameObject
+{
+    DWORD64                  vTable;
+    DWORD64                  ObjectTypeInfo;
+    ExileVector<Component *> Components;
+    char                     buff[0x300];
+
+    GameObject(DWORD hash)
+    {
+        // "Unknown object type serialized by server"
+        auto GetGameObjectTypeArray = (DWORD64(*)(DWORD64 * GameObjectRegister))(PathOfExile + 0xAE180);
+        auto GetGameObjectType      = (DWORD64(*)(DWORD64 GameObjectTypeArray, _Out_ DWORD64 * GameObjectType, DWORD ObjectTypeHash))(PathOfExile + 0xC029A0);
+        auto InitGameObject         = (DWORD64(*)(GameObject * GameObject, DWORD64 * GameObjectType))(PathOfExile + 0x166BD70);
+
+        World world(9052, 1);
+
+        DWORD64 GameObjectTypeArray = GetGameObjectTypeArray(&(world.GameObjectRegister));
+
+        DWORD64 GameObjectType = 0;
+        GetGameObjectType(GameObjectTypeArray, &GameObjectType, hash);
+
+        InitGameObject(this, &GameObjectType);
+    }
+
+    QString GetMetadataId()
+    {
+        return QString::fromUtf16(*(char16_t **)(ObjectTypeInfo + 8));
+    }
+
+    QJsonObject GetComponents()
+    {
+        QJsonObject JsonObject;
+        QJsonArray  JsonArray;
+
+        for (Component **i = Components.Begin; i != Components.End; i++)
+        {
+            JsonArray.append((*i)->getName());
+        }
+
+        JsonObject.insert(this->GetMetadataId(), JsonArray);
+        return JsonObject;
+    }
+};
+
+// ====================================================================================================
+
 void fn(mg_connection *c, int ev, void *ev_data, void *fn_data)
 {
     if (ev == MG_EV_HTTP_MSG)
@@ -271,6 +340,17 @@ void fn(mg_connection *c, int ev, void *ev_data, void *fn_data)
             header.append(QString("RadarInfo: %1\r\n").arg(world.getRadarInfo()));
 
             mg_http_reply(c, 200, header.toLatin1().data(), world.getTerrain().data(), NULL);
+        }
+        else if (mg_http_match_uri(hm, "/ot"))
+        {
+            char hash[16] = {};
+            mg_http_get_var(&hm->query, "hash", hash, sizeof(hash));
+
+            GameObject obj(2621544766);
+
+            QByteArray objInfo = QJsonDocument(obj.GetComponents()).toJson(QJsonDocument::Compact);
+
+            mg_http_reply(c, 200, NULL, objInfo.data(), NULL);
         }
         else
         {
