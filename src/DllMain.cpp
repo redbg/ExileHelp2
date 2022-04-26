@@ -346,9 +346,10 @@ void fn(mg_connection *c, int ev, void *ev_data, void *fn_data)
             char hash[16] = {};
             mg_http_get_var(&hm->query, "hash", hash, sizeof(hash));
 
-            GameObject obj(2621544766);
+            GameObject obj(atoll(hash));
 
             QByteArray objInfo = QJsonDocument(obj.GetComponents()).toJson(QJsonDocument::Compact);
+            qDebug() << objInfo;
 
             mg_http_reply(c, 200, NULL, objInfo.data(), NULL);
         }
