@@ -272,9 +272,11 @@ struct GameObject
     GameObject(DWORD hash)
     {
         // "Unknown object type serialized by server"
-        auto GetGameObjectTypeArray = (DWORD64(*)(DWORD64 * GameObjectRegister))(PathOfExile + 0xAE180);
-        auto GetGameObjectType      = (DWORD64(*)(DWORD64 GameObjectTypeArray, _Out_ DWORD64 * GameObjectType, DWORD ObjectTypeHash))(PathOfExile + 0xC029A0);
-        auto InitGameObject         = (DWORD64(*)(GameObject * GameObject, DWORD64 * GameObjectType))(PathOfExile + 0x166BD70);
+        auto GetGameObjectTypeArray = (DWORD64(*)(DWORD64 * GameObjectRegister))(PathOfExile + 0xAE180);                                                       // 3.17.4
+        auto GetGameObjectType      = (DWORD64(*)(DWORD64 GameObjectTypeArray, _Out_ DWORD64 * GameObjectType, DWORD ObjectTypeHash))(PathOfExile + 0xC029A0); // 3.17.4
+        auto InitGameObject         = (DWORD64(*)(GameObject * GameObject, DWORD64 * GameObjectType))(PathOfExile + 0x166BD70);                                // 3.17.4
+
+        memset(this, 0, sizeof(GameObject));
 
         World world(9052, 1);
 
@@ -345,6 +347,9 @@ void fn(mg_connection *c, int ev, void *ev_data, void *fn_data)
         {
             char hash[16] = {};
             mg_http_get_var(&hm->query, "hash", hash, sizeof(hash));
+
+            printf("\n");
+            qDebug() << "GameObjectHash:" << atoll(hash);
 
             GameObject obj(atoll(hash));
 
