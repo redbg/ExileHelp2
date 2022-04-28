@@ -284,9 +284,10 @@ struct GameObject
 
         GetGameObjectType(GameObjectTypeArray, &ObjectTypeInfo, hash);
 
-        qDebug() << this->GetMetadataId();
-
-        InitGameObject(this, &ObjectTypeInfo);
+        if (ObjectTypeInfo != 0)
+        {
+            InitGameObject(this, &ObjectTypeInfo);
+        }
     }
 
     QString GetMetadataId()
@@ -354,10 +355,17 @@ void fn(mg_connection *c, int ev, void *ev_data, void *fn_data)
 
             GameObject obj(atoll(hash));
 
-            QByteArray objInfo = QJsonDocument(obj.GetComponents()).toJson(QJsonDocument::Compact);
-            qDebug() << objInfo;
+            if (obj.ObjectTypeInfo != 0)
+            {
+                QByteArray objInfo = QJsonDocument(obj.GetComponents()).toJson(QJsonDocument::Compact);
+                qDebug() << objInfo;
 
-            mg_http_reply(c, 200, NULL, objInfo.data(), NULL);
+                mg_http_reply(c, 200, NULL, objInfo.data(), NULL);
+            }
+            else
+            {
+                mg_http_reply(c, 500, NULL, "无效Hash", NULL);
+            }
         }
         else
         {
