@@ -282,10 +282,11 @@ struct GameObject
 
         DWORD64 GameObjectTypeArray = GetGameObjectTypeArray(&(world.GameObjectRegister));
 
-        DWORD64 GameObjectType = 0;
-        GetGameObjectType(GameObjectTypeArray, &GameObjectType, hash);
+        GetGameObjectType(GameObjectTypeArray, &ObjectTypeInfo, hash);
 
-        InitGameObject(this, &GameObjectType);
+        qDebug() << this->GetMetadataId();
+
+        InitGameObject(this, &ObjectTypeInfo);
     }
 
     QString GetMetadataId()
