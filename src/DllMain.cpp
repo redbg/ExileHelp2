@@ -204,8 +204,8 @@ struct World
         {
             QPoint      point = this->terrain.find(i.key());
             QJsonObject temp;
-            temp.insert("x", point.x());
-            temp.insert("y", point.y());
+            temp.insert("x", point.x() * 23);
+            temp.insert("y", point.y() * 23);
             result.insert(i.value().toString(), temp);
         }
 
@@ -333,7 +333,7 @@ void fn(mg_connection *c, int ev, void *ev_data, void *fn_data)
             QString header;
             header.append(QString("TileHash: %1\r\n").arg(world.TileHash));
             header.append(QString("DoodadHash: %1\r\n").arg(world.DoodadHash));
-            header.append(QString("TerrainWidth: %1\r\n").arg(world.terrain.BytesPerRow * 2));
+            header.append(QString("TerrainWidth: %1\r\n").arg((world.terrain.BytesPerRow * 2) + 1));
             header.append(QString("TerrainHeight: %1\r\n").arg(world.terrain.Height * 23));
             header.append(QString("WorldAreaId: %1\r\n").arg(world.WorldInfo.getId()));
             header.append(QString("WorldAreaName: %1\r\n").arg(world.WorldInfo.getName()));
