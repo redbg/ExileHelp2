@@ -260,6 +260,11 @@ struct Component
     virtual void  vFun_50();
     virtual void  vFun_58();
     virtual char *getName();
+    virtual void  vFun_68();
+    virtual void  vFun_70();
+    virtual void  vFun_78();
+    virtual void  vFun_80();
+    virtual void  vFun_88();
 };
 
 struct GameObject
@@ -302,6 +307,7 @@ struct GameObject
 
         for (Component **i = Components.Begin; i != Components.End; i++)
         {
+            printf("0x%llx %s\n", *(DWORD64 *)((*(DWORD64 *)(*i)) + 0x88) - PathOfExile, (*i)->getName());
             JsonArray.append((*i)->getName());
         }
 
