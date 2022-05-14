@@ -24,11 +24,11 @@ struct WorldAreaInfo
     WorldAreaInfo(DWORD hash16)
     {
         // "Data/WorldAreas.dat"
-        auto GetWorldAreas = (void (*)(_Out_ DWORD64 * worldAreas))(PathOfExile + 0xD7BC0); // 3.17.4c
+        auto GetWorldAreas = (void (*)(_Out_ DWORD64 * worldAreas))(PathOfExile + 0xD9FA0); // 3.18.0
 
         auto GetWorldArea = (void (*)(_Out_ WorldAreaInfo * worldAreaInfo,
                                       DWORD * hash16,
-                                      DWORD64 * worldAreas))(PathOfExile + 0x158AA40); // 3.17.4c
+                                      DWORD64 * worldAreas))(PathOfExile + 0x15EC5C0); // 3.18.0
 
         GetWorldAreas(&this->WorldAreas);
         GetWorldArea(this, &hash16, &this->WorldAreas);
@@ -152,13 +152,13 @@ struct World
 
         struct
         {
-            char    pad_5d0[0x5d0];
+            char    pad_650[0x650];
             DWORD64 GameObjectRegister;
         };
 
         struct
         {
-            char    pad_8c0[0x8c0];
+            char    pad_940[0x940];
             Terrain terrain;
         };
 
@@ -168,12 +168,12 @@ struct World
     World(DWORD hash16, DWORD seed)
     {
         // 48 89 5C 24 10 48 89 4C 24 08 55 56 57 41 54 41 55 41 56 41 57 48 8B EC 48 83 EC ?? 48 8B F9 E8
-        auto InitWorld = (void (*)(_Out_ World * world))(PathOfExile + 0xBD5060); // 3.17.4c
+        auto InitWorld = (void (*)(_Out_ World * world))(PathOfExile + 0xC07DA0); // 3.18.0
 
         // call r10
         auto GeneratingWorld = (void (*)(World * world, WorldAreaInfo * worldAreaInfo, DWORD seed,
                                          DWORD64 a4, DWORD64 a5, DWORD64 a6, DWORD64 a7,
-                                         DWORD64 a8, DWORD64 a9, DWORD64 a10))(PathOfExile + 0xBD30B0); // 3.17.4c
+                                         DWORD64 a8, DWORD64 a9, DWORD64 a10))(PathOfExile + 0xC05B20); // 3.18.0
 
         WorldAreaInfo info(hash16);
 
@@ -277,9 +277,9 @@ struct GameObject
     GameObject(DWORD hash)
     {
         // "Unknown object type serialized by server"
-        auto GetGameObjectTypeArray = (DWORD64(*)(DWORD64 * GameObjectRegister))(PathOfExile + 0xB0300);                                                       // 3.17.4c
-        auto GetGameObjectType      = (DWORD64(*)(DWORD64 GameObjectTypeArray, _Out_ DWORD64 * GameObjectType, DWORD ObjectTypeHash))(PathOfExile + 0xBFDDA0); // 3.17.4c
-        auto InitGameObject         = (DWORD64(*)(GameObject * GameObject, DWORD64 * GameObjectType))(PathOfExile + 0x166FBF0);                                // 3.17.4c
+        auto GetGameObjectTypeArray = (DWORD64(*)(DWORD64 * GameObjectRegister))(PathOfExile + 0xB2410);                                                       // 3.18.0
+        auto GetGameObjectType      = (DWORD64(*)(DWORD64 GameObjectTypeArray, _Out_ DWORD64 * GameObjectType, DWORD ObjectTypeHash))(PathOfExile + 0xC31B30); // 3.18.0
+        auto InitGameObject         = (DWORD64(*)(GameObject * GameObject, DWORD64 * GameObjectType))(PathOfExile + 0x1671880);                                // 3.18.0
 
         memset(this, 0, sizeof(GameObject));
 
