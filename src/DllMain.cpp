@@ -28,7 +28,7 @@ struct WorldAreaInfo
 
         auto GetWorldArea = (void (*)(_Out_ WorldAreaInfo * worldAreaInfo,
                                       DWORD * hash16,
-                                      DWORD64 * worldAreas))(PathOfExile + 0x15EC560); // 3.18.0b
+                                      DWORD64 * worldAreas))(PathOfExile + 0x15EC790); // 3.18.0b
 
         GetWorldAreas(&this->WorldAreas);
         GetWorldArea(this, &hash16, &this->WorldAreas);
@@ -168,12 +168,12 @@ struct World
     World(DWORD hash16, DWORD seed)
     {
         // 48 89 5C 24 10 48 89 4C 24 08 55 56 57 41 54 41 55 41 56 41 57 48 8B EC 48 83 EC ?? 48 8B F9 E8
-        auto InitWorld = (void (*)(_Out_ World * world))(PathOfExile + 0xC07DC0); // 3.18.0b
+        auto InitWorld = (void (*)(_Out_ World * world))(PathOfExile + 0xC07FF0); // 3.18.0b
 
         // call r10
         auto GeneratingWorld = (void (*)(World * world, WorldAreaInfo * worldAreaInfo, DWORD seed,
                                          DWORD64 a4, DWORD64 a5, DWORD64 a6, DWORD64 a7,
-                                         DWORD64 a8, DWORD64 a9, DWORD64 a10))(PathOfExile + 0xC05B40); // 3.18.0b
+                                         DWORD64 a8, DWORD64 a9, DWORD64 a10))(PathOfExile + 0xC05D70); // 3.18.0b
 
         WorldAreaInfo info(hash16);
 
@@ -278,8 +278,8 @@ struct GameObject
     {
         // "Unknown object type serialized by server"
         auto GetGameObjectTypeArray = (DWORD64(*)(DWORD64 * GameObjectRegister))(PathOfExile + 0xB2410);                                                       // 3.18.0b
-        auto GetGameObjectType      = (DWORD64(*)(DWORD64 GameObjectTypeArray, _Out_ DWORD64 * GameObjectType, DWORD ObjectTypeHash))(PathOfExile + 0xC31B50); // 3.18.0b
-        auto InitGameObject         = (DWORD64(*)(GameObject * GameObject, DWORD64 * GameObjectType))(PathOfExile + 0x1671820);                                // 3.18.0b
+        auto GetGameObjectType      = (DWORD64(*)(DWORD64 GameObjectTypeArray, _Out_ DWORD64 * GameObjectType, DWORD ObjectTypeHash))(PathOfExile + 0xC31D80); // 3.18.0b
+        auto InitGameObject         = (DWORD64(*)(GameObject * GameObject, DWORD64 * GameObjectType))(PathOfExile + 0x1671A60);                                // 3.18.0b
 
         memset(this, 0, sizeof(GameObject));
 
