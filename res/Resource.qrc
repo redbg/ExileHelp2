@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>important_tgt_files.txt</file>
+    </qresource>
+</RCC>

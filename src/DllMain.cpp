@@ -214,7 +214,7 @@ struct World
 
     QJsonObject getRadarData()
     {
-        QFile file("important_tgt_files.txt");
+        QFile file(":/important_tgt_files.txt");
         file.open(QFile::ReadOnly);
 
         return QJsonDocument::fromJson(file.readAll()).object();
